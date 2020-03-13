@@ -154,6 +154,36 @@ impl Deserializable for String {
     }
 }
 
+impl<T: Deserializable> Deserializable for &'_ [T] {
+    type Output<'a> = Vec<T::Output<'a>>;
+
+    fn deserialize<'a>(reader: &mut Reader<'a>) -> Option<Self::Output<'a>> {
+        let length = reader.read_i16()?;
+        let mut result = Vec::with_capacity(length as _);
+
+        for _ in 0..length {
+            result.push(T::deserialize(reader)?);
+        }
+
+        Some(result)
+    }
+}
+
+impl<T: Deserializable> Deserializable for Vec<T> {
+    type Output<'a> = Vec<T::Output<'a>>;
+
+    fn deserialize<'a>(reader: &mut Reader<'a>) -> Option<Self::Output<'a>> {
+        let length = reader.read_i16()?;
+        let mut result = Vec::with_capacity(length as _);
+
+        for _ in 0..length {
+            result.push(T::deserialize(reader)?);
+        }
+
+        Some(result)
+    }
+}
+
 macro_rules! impl_primitive {
     ($(($type: ty, $fn: ident)),*) => {
         $(
