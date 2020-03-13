@@ -59,9 +59,47 @@ impl Writer {
         self.write_bytes(&v.to_le_bytes());
     }
 
+    pub fn write_uleb128(&mut self, mut v: u64) {
+        while v >= 0x80 {
+            self.write_u8((v | 0x80) as u8);
+            v >>= 7;
+        }
+
+        self.write_u8(v as u8);
+    }
+
+    pub fn write_str(&mut self, v: &str) {
+        self.write_u8(0x0b);
+
+        if v.len() > 0 {
+            let bytes = v.as_bytes();
+
+            self.write_uleb128(bytes.len() as _);
+            self.write_bytes(bytes);
+        } else {
+            self.write_u8(0x00);
+        }
+    }
+
+    pub fn write_string(&mut self, v: String) {
+        self.write_str(&v);
+    }
+
     pub fn write<T: ?Sized>(&mut self, v: &T)
     where T: Serializable {
         v.serialize(self);
+    }
+}
+
+impl Serializable for &'_ str {
+    fn serialize(&self, writer: &mut Writer) {
+        writer.write_str(self)
+    }
+}
+
+impl Serializable for String {
+    fn serialize(&self, writer: &mut Writer) {
+        writer.write_str(&self);
     }
 }
 

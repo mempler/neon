@@ -5,3 +5,4 @@ authors = ["czapek", "Mempler"]
 edition = "2018"
 
 [dependencies]
+leb128 = "0.2.4"

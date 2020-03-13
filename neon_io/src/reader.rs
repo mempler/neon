@@ -93,9 +93,64 @@ impl<'a> Reader<'a> {
         }
     }
 
+    pub fn read_uleb128(&mut self) -> Option<u64> {
+        let mut result = 0;
+        let mut shift = 0;
+
+        loop {
+            let byte = self.read_u8()?;
+
+            result |= ((byte & 0x7F) as u64) << shift;
+            shift += 7;
+
+            if (byte & 0x80) == 0 {
+                break
+            }
+        }
+
+        Some(result)
+    }
+
+    pub fn read_str(&mut self) -> Option<&'a str> {
+        let tag = self.read_u8()?;
+
+        match tag {
+            11 => {
+                let length = self.read_uleb128()?;
+                let bytes = self.read_bytes(length as _)?;
+
+                match std::str::from_utf8(bytes) {
+                    Ok(string) => Some(string),
+                    Err(_) => None,
+                }
+            },
+            _ => None,
+        }
+    }
+
+    pub fn read_string(&mut self) -> Option<String> {
+        Some(self.read_str()?.to_string())
+    }
+
     pub fn read<T: Sized>(&mut self) -> Option<T::Output<'a>>
     where T: Deserializable {
         T::deserialize(self)
+    }
+}
+
+impl Deserializable for &'_ str {
+    type Output<'a> = &'a str;
+
+    fn deserialize<'a>(reader: &mut Reader<'a>) -> Option<Self::Output<'a>> {
+        reader.read_str()
+    }
+}
+
+impl Deserializable for String {
+    type Output<'a> = String;
+
+    fn deserialize<'a>(reader: &mut Reader<'a>) -> Option<Self::Output<'a>> {
+        reader.read_string()
     }
 }
 
