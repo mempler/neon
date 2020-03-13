@@ -1,0 +1,7 @@
+[package]
+name = "neon_io"
+version = "0.0.1"
+authors = ["czapek", "Mempler"]
+edition = "2018"
+
+[dependencies]

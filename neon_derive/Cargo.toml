@@ -1,0 +1,14 @@
+[package]
+name = "neon_derive"
+version = "0.0.1"
+authors = ["czapek", "Mempler"]
+edition = "2018"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+neon_io = { path = "../neon_io" }
+proc-macro2 = "^1.0.9"
+syn = "^1.0.16"
+quote = "^1.0.3"

@@ -1,7 +1,9 @@
-[package]
-name = "neon"
-version = "0.0.1"
-authors = ["czapek", "Mempler"]
-edition = "2018"
-
-[dependencies]
+[workspace]
+members = [
+    "neon",
+    "neon_derive",
+    "neon_io",
+]
+default-members = [
+  "neon"
+]
