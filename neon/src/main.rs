@@ -1,6 +1,9 @@
 #![allow(incomplete_features)]
 #![feature(generic_associated_types)]
 
+mod enums;
+mod packets;
+
 use neon_derive::{Deserialize, Serialize};
 use neon_io::{reader::Reader, writer::Writer};
 

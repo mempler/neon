@@ -7,3 +7,5 @@ edition = "2018"
 [dependencies]
 neon_derive = { path = "../neon_derive" }
 neon_io = { path = "../neon_io" }
+
+bitflags = "1.2.1"
