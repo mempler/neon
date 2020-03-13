@@ -599,3 +599,7 @@ healthchecksdb
 MigrationBackup/
 
 # End of https://www.gitignore.io/api/c,c++,rust,linux,macos,windows,visualstudio,jetbrains+all,visualstudiocode
+
+# Custom
+settings.toml
+

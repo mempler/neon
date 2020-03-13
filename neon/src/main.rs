@@ -1,8 +1,10 @@
 #![allow(incomplete_features)]
 #![feature(generic_associated_types)]
 
+mod database;
 mod enums;
 mod packets;
+mod settings;
 
 use neon_derive::{Deserialize, Serialize};
 use neon_io::{reader::Reader, writer::Writer};
@@ -14,16 +16,18 @@ struct Point {
 }
 
 fn main() {
-    let test = Point {
-        x: 13.37_f32,
-        y: 42.69_f32,
-    };
+    flexi_logger::Logger::with_str("off,neon=trace")
+        .format(|writer, now, message| {
+            write!(
+                writer,
+                "{} [{:>5}] {}",
+                now.now().format("%Y-%m-%d %H:%M:%S"),
+                message.level(),
+                &message.args()
+            )
+        })
+        .start()
+        .unwrap();
 
-    let mut writer = Writer::new();
-
-    writer.write(&test);
-
-    let mut reader = Reader::new(writer.get_data());
-
-    println!("{:?}", reader.read::<Point>());
+    std::mem::drop(database::get_connection());
 }
