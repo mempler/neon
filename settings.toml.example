@@ -3,5 +3,5 @@ address = "127.0.0.1"
 port = 5501
 
 [database]
-connection_url = "root@localhost:3306/neon"
+connection_url = "mysql://root@localhost:3306/neon"
 pool_size = 32

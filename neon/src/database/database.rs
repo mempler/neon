@@ -1,4 +1,4 @@
-use crate::config;
+use crate::settings;
 
 use std::time::Duration;
 
@@ -9,11 +9,11 @@ use diesel::{
 
 lazy_static::lazy_static! {
    static ref CONNECTION_POOL: Pool<ConnectionManager<MysqlConnection>> = {
-      let config = config::get_config();
-      let database_url = config.database.connection_url.clone().unwrap_or("mysql://root@localhost:3306/kobayashi".into());
+      let settings = settings::get_settings();
+      let database_url = settings.database.connection_url.clone().unwrap_or("mysql://root@localhost:3306/neon".into());
 
       let build_result = Pool::builder()
-         .max_size(config.database.pool_size.unwrap_or(num_cpus::get() as u32 * 4))
+         .max_size(settings.database.pool_size.unwrap_or(num_cpus::get() as u32 * 4))
          .connection_timeout(Duration::from_secs(5))
          .build(ConnectionManager::new(database_url));
 
