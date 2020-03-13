@@ -103,6 +103,26 @@ impl Serializable for String {
     }
 }
 
+impl<T: Serializable> Serializable for &'_ [T] {
+    fn serialize(&self, writer: &mut Writer) {
+        writer.write_i16(self.len() as _);
+
+        for it in self.iter() {
+            writer.write(it);
+        }
+    }
+}
+
+impl<T: Serializable> Serializable for Vec<T> {
+    fn serialize(&self, writer: &mut Writer) {
+        writer.write_i16(self.len() as _);
+
+        for it in self.iter() {
+            writer.write(it);
+        }
+    }
+}
+
 macro_rules! impl_primitive {
     ($(($type: ty, $fn: ident)),*) => {
         $(
