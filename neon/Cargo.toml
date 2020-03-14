@@ -8,6 +8,8 @@ edition = "2018"
 neon_derive = { path = "../neon_derive" }
 neon_io = { path = "../neon_io" }
 
+actix-web = "2.0.0"
+actix-rt = "1.0.0"
 bitflags = "1.2.1"
 diesel = { version = "1.4.3", features = ["mysql", "r2d2"] }
 flexi_logger = "0.15.1"

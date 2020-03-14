@@ -1,21 +1,16 @@
 #![allow(incomplete_features)]
 #![feature(generic_associated_types)]
 
+mod controllers;
 mod database;
 mod enums;
 mod packets;
 mod settings;
 
-use neon_derive::{Deserialize, Serialize};
-use neon_io::{reader::Reader, writer::Writer};
+use actix_web::{App, HttpServer};
 
-#[derive(Debug, Deserialize, Serialize)]
-struct Point {
-    pub x: f32,
-    pub y: f32,
-}
-
-fn main() {
+#[actix_rt::main]
+async fn main() -> std::io::Result<()> {
     flexi_logger::Logger::with_str("off,neon=trace")
         .format(|writer, now, message| {
             write!(
@@ -28,6 +23,15 @@ fn main() {
         })
         .start()
         .unwrap();
+    let settings = settings::get_settings();
 
     std::mem::drop(database::get_connection());
+
+    let addr = settings.http.address.clone().unwrap_or("127.0.0.1".to_string());
+    let port = settings.http.port.clone().unwrap_or(5501);
+
+    HttpServer::new(|| App::new().service(controllers::index))
+        .bind(format!("{}:{}", addr, port))?
+        .run()
+        .await
 }
