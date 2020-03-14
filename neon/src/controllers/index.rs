@@ -1,12 +1,23 @@
-use actix_web::{http::ContentEncoding, post, web, HttpResponse, Responder};
+use actix_web::{post, web, HttpRequest, HttpResponse, Responder};
 
 use neon_io::writer::Writer;
 
-use crate::{enums::PacketId, packets};
+use crate::{enums::PacketId, events::handle_packet_stream, packets};
 
 #[post("/")]
-pub async fn index(info: web::Path<()>) -> impl Responder {
+pub async fn index(req: HttpRequest, body: web::Bytes) -> impl Responder {
     let writer = &mut Writer::new();
+
+    let token_header = req.headers().get("osu-token");
+    match token_header {
+        Some(_) => {
+            handle_packet_stream(body.to_vec().as_mut());
+        },
+        None => {
+            // TODO: Handle login
+        },
+    }
+
     // just a test, TODO: replace with a proper packet structure.
     let announcement = packets::Announce {
         message: "Hello World".to_string(),

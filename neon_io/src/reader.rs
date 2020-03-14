@@ -3,20 +3,35 @@ use crate::serializable::Deserializable;
 use std::convert::TryInto;
 
 pub struct Reader<'a> {
-    input:    &'a [u8],
+    input: &'a [u8],
     position: usize,
 }
 
 impl<'a> Reader<'a> {
     pub fn new(input: &'a [u8]) -> Self {
-        Self {
-            input,
-            position: 0,
-        }
+        Self { input, position: 0 }
     }
 
     pub fn available(&self) -> usize {
         self.input.len() - self.position
+    }
+
+    pub fn seek(&mut self, pos: usize) {
+        if self.available() >= pos {
+            self.position = pos
+        }
+    }
+
+    pub fn seek_forward(&mut self, pos: usize) {
+        if self.available() >= pos {
+            self.position += pos
+        }
+    }
+
+    pub fn seek_backward(&mut self, pos: usize) {
+        if self.available() >= pos {
+            self.position -= pos
+        }
     }
 
     pub fn read_bytes(&mut self, amount: usize) -> Option<&'a [u8]> {
@@ -25,7 +40,7 @@ impl<'a> Reader<'a> {
         } else {
             self.position += amount;
 
-            Some(&self.input[self.position - amount .. self.position])
+            Some(&self.input[self.position - amount..self.position])
         }
     }
 
@@ -104,7 +119,7 @@ impl<'a> Reader<'a> {
             shift += 7;
 
             if (byte & 0x80) == 0 {
-                break
+                break;
             }
         }
 
@@ -123,7 +138,7 @@ impl<'a> Reader<'a> {
                     Ok(string) => Some(string),
                     Err(_) => None,
                 }
-            },
+            }
             _ => None,
         }
     }
@@ -133,7 +148,9 @@ impl<'a> Reader<'a> {
     }
 
     pub fn read<T: Sized>(&mut self) -> Option<T::Output<'a>>
-    where T: Deserializable {
+    where
+        T: Deserializable,
+    {
         T::deserialize(self)
     }
 }

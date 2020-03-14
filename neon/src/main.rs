@@ -4,6 +4,7 @@
 mod controllers;
 mod database;
 mod enums;
+mod events;
 mod packets;
 mod settings;
 
@@ -27,7 +28,11 @@ async fn main() -> std::io::Result<()> {
 
     std::mem::drop(database::get_connection());
 
-    let addr = settings.http.address.clone().unwrap_or("127.0.0.1".to_string());
+    let addr = settings
+        .http
+        .address
+        .clone()
+        .unwrap_or("127.0.0.1".to_string());
     let port = settings.http.port.clone().unwrap_or(5501);
 
     HttpServer::new(|| App::new().service(controllers::index))
