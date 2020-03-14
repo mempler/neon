@@ -8,15 +8,11 @@ use crate::{enums::PacketId, packets};
 pub async fn index(info: web::Path<()>) -> impl Responder {
     let writer = &mut Writer::new();
     // just a test, TODO: replace with a proper packet structure.
-    writer.write_u16(PacketId::ServerAnnounce as _);
-    writer.write_u8(0);
-    writer.write_u32(13);
-
     let announcement = packets::Announce {
         message: "Hello World".to_string(),
     };
 
-    writer.write(&announcement);
+    writer.write(&packets::Packet::new(PacketId::ServerAnnounce, announcement));
 
     HttpResponse::Ok()
         .content_type("application/octet-stream")
