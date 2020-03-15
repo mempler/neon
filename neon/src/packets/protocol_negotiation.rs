@@ -3,5 +3,5 @@ use neon_io::{reader::Reader, writer::Writer};
 
 #[derive(Deserialize, Serialize)]
 pub struct ProtocolNegotiation {
-    pub protocol: u32,
+    pub version: u32,
 }

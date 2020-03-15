@@ -3,13 +3,16 @@ use crate::serializable::Deserializable;
 use std::convert::TryInto;
 
 pub struct Reader<'a> {
-    input: &'a [u8],
+    input:    &'a [u8],
     position: usize,
 }
 
 impl<'a> Reader<'a> {
     pub fn new(input: &'a [u8]) -> Self {
-        Self { input, position: 0 }
+        Self {
+            input,
+            position: 0,
+        }
     }
 
     pub fn available(&self) -> usize {
@@ -40,7 +43,7 @@ impl<'a> Reader<'a> {
         } else {
             self.position += amount;
 
-            Some(&self.input[self.position - amount..self.position])
+            Some(&self.input[self.position - amount .. self.position])
         }
     }
 
@@ -119,7 +122,7 @@ impl<'a> Reader<'a> {
             shift += 7;
 
             if (byte & 0x80) == 0 {
-                break;
+                break
             }
         }
 
@@ -138,7 +141,7 @@ impl<'a> Reader<'a> {
                     Ok(string) => Some(string),
                     Err(_) => None,
                 }
-            }
+            },
             _ => None,
         }
     }
@@ -148,9 +151,7 @@ impl<'a> Reader<'a> {
     }
 
     pub fn read<T: Sized>(&mut self) -> Option<T::Output<'a>>
-    where
-        T: Deserializable,
-    {
+    where T: Deserializable {
         T::deserialize(self)
     }
 }
@@ -178,7 +179,7 @@ impl<T: Deserializable> Deserializable for &'_ [T] {
         let length = reader.read_i16()?;
         let mut result = Vec::with_capacity(length as _);
 
-        for _ in 0..length {
+        for _ in 0 .. length {
             result.push(T::deserialize(reader)?);
         }
 
@@ -193,11 +194,27 @@ impl<T: Deserializable> Deserializable for Vec<T> {
         let length = reader.read_i16()?;
         let mut result = Vec::with_capacity(length as _);
 
-        for _ in 0..length {
+        for _ in 0 .. length {
             result.push(T::deserialize(reader)?);
         }
 
         Some(result)
+    }
+}
+
+impl Deserializable for &'_ () {
+    type Output<'a> = ();
+
+    fn deserialize<'a>(_reader: &mut Reader<'a>) -> Option<Self::Output<'a>> {
+        Some(())
+    }
+}
+
+impl Deserializable for () {
+    type Output<'a> = ();
+
+    fn deserialize<'a>(_reader: &mut Reader<'a>) -> Option<Self::Output<'a>> {
+        Some(())
     }
 }
 

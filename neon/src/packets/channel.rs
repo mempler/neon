@@ -28,7 +28,7 @@ pub struct ChannelLeave {
     pub name: String,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Message {
     pub username:       String,
     pub message:        String,

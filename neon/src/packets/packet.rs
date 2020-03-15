@@ -15,9 +15,16 @@ impl<T: Sized + Serializable + Deserializable> Deserializable for Packet<T> {
     type Output<'a> = Packet<T::Output<'a>>;
 
     fn deserialize<'a>(reader: &mut Reader<'a>) -> Option<Self::Output<'a>> {
+        let id = reader.read::<PacketId>()?;
+        let _ = reader.read_u8()?;
+        let length = reader.read_u32()?;
+        let data = reader.read_bytes(length as _)?;
+
+        let mut data_reader = Reader::new(data);
+
         Some(Packet {
-            id:   reader.read::<PacketId>()?,
-            data: reader.read::<T>()?,
+            id,
+            data: data_reader.read::<T>()?,
         })
     }
 }

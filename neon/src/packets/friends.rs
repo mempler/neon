@@ -10,3 +10,8 @@ pub struct FriendAdd {
 pub struct FriendRemove {
     pub user_id: i32,
 }
+
+#[derive(Deserialize, Serialize)]
+pub struct FriendsList {
+    pub user_ids: Vec<i32>,
+}

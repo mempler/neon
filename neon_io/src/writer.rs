@@ -89,6 +89,10 @@ impl Writer {
     where T: Serializable {
         v.serialize(self);
     }
+
+    pub fn clear(&mut self) {
+        self.data.clear();
+    }
 }
 
 impl Serializable for &'_ str {
@@ -121,6 +125,14 @@ impl<T: Serializable> Serializable for Vec<T> {
             writer.write(it);
         }
     }
+}
+
+impl Serializable for &'_ () {
+    fn serialize(&self, _writer: &mut Writer) {}
+}
+
+impl Serializable for () {
+    fn serialize(&self, _writer: &mut Writer) {}
 }
 
 macro_rules! impl_primitive {

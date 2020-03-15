@@ -1,7 +1,7 @@
 use neon_derive::{Deserialize, Serialize};
 use neon_io::{reader::Reader, writer::Writer};
 
-use crate::enums::{Country, ErrorState, LoginError, Permissions, PlayMode, UserAction};
+use crate::enums::{Country, ErrorState, Permissions, PlayMode, UserAction};
 
 #[derive(Deserialize, Serialize)]
 pub struct LoginPermissions {
@@ -10,7 +10,7 @@ pub struct LoginPermissions {
 
 #[derive(Deserialize, Serialize)]
 pub struct LoginResponse {
-    pub response: LoginError,
+    pub response: i32,
 }
 
 #[derive(Deserialize, Serialize)]
